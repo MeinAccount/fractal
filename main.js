@@ -31,7 +31,7 @@ const reds = [], greens = [];
     };
 
 
-    // resize canvas
+    // trigger initial resizing
     resizeHandler();
     window.addEventListener('resize', resizeHandler);
 
@@ -42,7 +42,7 @@ const reds = [], greens = [];
     let zoom = 350;
 
 
-    // allow mouse drags
+    // react to mouse drags
     let downEvent = null;
     canvas.addEventListener('mousedown', event => downEvent = event);
     canvas.addEventListener('mouseup', event => {
