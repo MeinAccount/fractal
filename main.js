@@ -21,39 +21,56 @@ const reds = [], greens = [];
 
 // render fractal
 (function () {
-    const width = document.body.clientWidth;
-    const height = document.body.clientHeight;
-
-    // set canvas size
+    let width, height, renderedX;
     const canvas = document.querySelector('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = width;
-    canvas.height = height;
+    const resizeHandler = () => {
+        canvas.width = width = document.body.clientWidth;
+        canvas.height = height = document.body.clientHeight;
+        renderedX = 0;
+    };
+
+
+    // resize canvas
+    resizeHandler();
+    window.addEventListener('resize', resizeHandler);
 
 
     // TODO: construct matching state
-    const offsetX = -width / 2 - 200;
-    const offsetY = -height / 2;
-    const zoom = 350;
+    let offsetX = -width / 2 - 200;
+    let offsetY = -height / 2;
+    let zoom = 350;
 
-    // define rendering function
-    let lastX = 0;
+
+    // allow mouse drags
+    let downEvent = null;
+    canvas.addEventListener('mousedown', event => downEvent = event);
+    canvas.addEventListener('mouseup', event => {
+        offsetX -= event.clientX - downEvent.clientX;
+        offsetY -= event.clientY - downEvent.clientY;
+        downEvent = null;
+
+        renderedX = 0;
+    });
+
+
+    // render continuously
     const render = () => {
-        let x = lastX;
-        lastX += 5;
+        if (renderedX < width) {
+            let x = renderedX;
+            renderedX += 10;
 
-        // render progressively in columns
-        for (; x <= lastX; x++) {
-            for (let y = 0; y <= height; y++) {
-                const n = stepsToDivergence((x + offsetX) / zoom, (y + offsetY) / zoom, iterations);
-                context.fillStyle = colorFromSteps(n, iterations);
-                context.fillRect(x, y, 1, 1);
+            // render progressively in columns
+            for (; x <= renderedX; x++) {
+                for (let y = 0; y <= height; y++) {
+                    const n = stepsToDivergence((x + offsetX) / zoom, (y + offsetY) / zoom, iterations);
+                    context.fillStyle = colorFromSteps(n, iterations);
+                    context.fillRect(x, y, 1, 1);
+                }
             }
         }
 
-        if (lastX < width) {
-            requestAnimationFrame(render);
-        }
+        requestAnimationFrame(render);
     };
 
     // start rendering
