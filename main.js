@@ -1,6 +1,25 @@
 "use strict";
 
 const iterations = 200;
+const reds = [], greens = [];
+
+// calculate colors as micro task
+(function () {
+    let offsetRed = 10, offsetGreen = 10;
+    for (let i = 0; i <= 200; i++) {
+        reds[i] = offsetRed;
+        greens[i] = offsetGreen;
+
+        if (i < 100) {
+            offsetRed += 4;
+        } else if (i < 200) {
+            offsetGreen += 4;
+        }
+    }
+})();
+
+
+// render fractal
 (function () {
     const width = document.body.clientWidth;
     const height = document.body.clientHeight;
@@ -41,6 +60,7 @@ const iterations = 200;
     requestAnimationFrame(render);
 })();
 
+
 function stepsToDivergence(x, y, max) {
     // always buffer real part (both calculations need to be simulations)
     let currentRe = 0, currentIm = 0, buffer = 0;
@@ -56,21 +76,6 @@ function stepsToDivergence(x, y, max) {
 
     return 0;
 }
-
-// calculate colors
-const reds = [], greens = [];
-let offsetRed = 10, offsetGreen = 10;
-for (let i = 0; i <= 200; i++) {
-    reds[i] = offsetRed;
-    greens[i] = offsetGreen;
-
-    if (i < 100) {
-        offsetRed += 4;
-    } else if (i < 200) {
-        offsetGreen += 4;
-    }
-}
-
 
 function colorFromSteps(n, max) {
     if (n == 0) {
