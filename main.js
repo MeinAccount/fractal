@@ -17,11 +17,13 @@ const iterations = 200;
     const offsetY = -height / 2;
     const zoom = 350;
 
-    // define rendering
+    // define rendering function
     let lastX = 0;
     const render = () => {
         let x = lastX;
-        lastX += 20;
+        lastX += 5;
+
+        // render progressively in columns
         for (; x <= lastX; x++) {
             for (let y = 0; y <= height; y++) {
                 const n = stepsToDivergence((x + offsetX) / zoom, (y + offsetY) / zoom, iterations);
