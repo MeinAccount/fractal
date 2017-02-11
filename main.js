@@ -7,7 +7,7 @@ const iterations = 200;
 
     // set canvas size
     const canvas = document.querySelector('canvas');
-    const ctx = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
     canvas.width = width;
     canvas.height = height;
 
@@ -25,8 +25,8 @@ const iterations = 200;
         for (; x <= lastX; x++) {
             for (let y = 0; y <= height; y++) {
                 const n = stepsToDivergence((x + offsetX) / zoom, (y + offsetY) / zoom, iterations);
-                ctx.fillStyle = colorFromSteps(n, iterations);
-                ctx.fillRect(x, y, 1, 1);
+                context.fillStyle = colorFromSteps(n, iterations);
+                context.fillRect(x, y, 1, 1);
             }
         }
 
