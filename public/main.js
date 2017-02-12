@@ -53,10 +53,19 @@
 
 
     // render continuously
+    let rendering = false;
     const render = () => {
         if (renderedX < width) {
+            if (!rendering) {
+                console.time('rendering');
+                rendering = true;
+            }
+
             let x = renderedX;
-            renderedX += 10;
+            renderedX = renderedX + 100;
+
+            // Chrome 56 cannot optimize compound let assignments
+            // renderedX += 100;
 
             // render progressively in columns
             for (; x <= renderedX; x++) {
@@ -65,6 +74,9 @@
                     context.fillRect(x, y, 1, 1);
                 }
             }
+        } else if (rendering) {
+            console.timeEnd('rendering');
+            rendering = false;
         }
 
         requestAnimationFrame(render);
