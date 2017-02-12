@@ -1,5 +1,7 @@
 "use strict";
 
+const register = 'requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame;
+
 // render fractal
 (function () {
     let width, height, offsetX, offsetY, renderedX;
@@ -38,7 +40,7 @@
             isTiming = false;
         }
 
-        requestAnimationFrame(render);
+        register(render);
     };
 
     // react to resizing
@@ -101,7 +103,7 @@
     resizeHandler();
     offsetX = width / 2 + 200;
     offsetY = height / 2;
-    requestAnimationFrame(render);
+    register(render);
 })();
 
 
