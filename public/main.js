@@ -63,16 +63,34 @@
 
 
     // react to scrolling
+    let zoomScaling = 2;
     const scrollHandler = event => {
+        let delta = event.wheelDelta ? event.wheelDelta : -event.detail * 40;
+        if (delta >= 0) {
+            delta *= zoomScaling * zoomScaling * 40;
+            zoomScaling++;
+        } else {
+            zoomScaling = Math.max(zoomScaling - 1, 1);
+            delta *= zoomScaling * zoomScaling * 40;
+        }
+
+
         // there shall be a fixed point under the cursor
-        const delta = event.wheelDelta ? event.wheelDelta * 10 : -event.detail * 400;
         const ratio = (zoom + delta) / zoom;
         offsetX = event.clientX - ratio * (event.clientX - offsetX);
         offsetY = event.clientY - ratio * (event.clientY - offsetY);
 
-        // redraw everything
+        // apply limited zooming
         zoom += delta;
-        iterations = 10 * Math.sqrt(zoom);
+        if (zoom <= 100) {
+            zoom = 100;
+            zoomScaling = 1;
+            offsetX = width / 2;
+            offsetY = height / 2;
+        }
+
+        // apparently 64bit doubles can't be more precise than 800 iterations
+        iterations = Math.min(100 + 0.8 * Math.sqrt(zoom), 800);
         renderedX = 0;
     };
     canvas.addEventListener('DOMMouseScroll', scrollHandler);
