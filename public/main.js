@@ -2,26 +2,48 @@
 
 // render fractal
 (function () {
-    let width, height, renderedX;
+    let width, height, offsetX, offsetY, renderedX;
+    let zoom = 350;
+    let iterations = 10 * Math.sqrt(zoom);
+
+    // setup continuous rendering
+    let isTiming = false;
     const canvas = document.querySelector('canvas');
     const context = canvas.getContext('2d');
+    const render = () => {
+        if (renderedX < width) {
+            if (!isTiming) {
+                console.time('rendering');
+                isTiming = true;
+            }
+
+            // Chrome 56 cannot optimize compound let assignments
+            let x = renderedX;
+            renderedX = renderedX + 100;
+            // renderedX += 100;
+
+            // render progressively in columns
+            for (; x <= renderedX; x++) {
+                for (let y = 0; y <= height; y++) {
+                    context.fillStyle = colorAtPoint((x - offsetX) / zoom, (y - offsetY) / zoom, iterations);
+                    context.fillRect(x, y, 1, 1);
+                }
+            }
+        } else if (isTiming) {
+            console.timeEnd('rendering');
+            isTiming = false;
+        }
+
+        requestAnimationFrame(render);
+    };
+
+    // react to resizing
     const resizeHandler = () => {
         canvas.width = width = document.body.clientWidth;
         canvas.height = height = document.body.clientHeight;
         renderedX = 0;
     };
-
-
-    // trigger initial resizing
-    resizeHandler();
     window.addEventListener('resize', resizeHandler);
-
-
-    // TODO: construct matching state
-    let offsetX = width / 2 + 200;
-    let offsetY = height / 2;
-    let zoom = 350;
-    let iterations = 10 * Math.sqrt(zoom);
 
 
     // react to mouse drags
@@ -34,6 +56,7 @@
 
         renderedX = 0;
     });
+
 
     // react to scrolling
     const scrollHandler = event => {
@@ -52,37 +75,10 @@
     canvas.addEventListener('mousewheel', scrollHandler);
 
 
-    // render continuously
-    let rendering = false;
-    const render = () => {
-        if (renderedX < width) {
-            if (!rendering) {
-                console.time('rendering');
-                rendering = true;
-            }
-
-            let x = renderedX;
-            renderedX = renderedX + 100;
-
-            // Chrome 56 cannot optimize compound let assignments
-            // renderedX += 100;
-
-            // render progressively in columns
-            for (; x <= renderedX; x++) {
-                for (let y = 0; y <= height; y++) {
-                    context.fillStyle = colorAtPoint((x - offsetX) / zoom, (y - offsetY) / zoom, iterations);
-                    context.fillRect(x, y, 1, 1);
-                }
-            }
-        } else if (rendering) {
-            console.timeEnd('rendering');
-            rendering = false;
-        }
-
-        requestAnimationFrame(render);
-    };
-
-    // start rendering
+    // TODO: trigger initial resizing
+    resizeHandler();
+    offsetX = width / 2 + 200;
+    offsetY = height / 2;
     requestAnimationFrame(render);
 })();
 
