@@ -1,22 +1,5 @@
 "use strict";
 
-// calculate colors as micro task
-const reds = [], greens = [];
-(function () {
-    let offsetRed = 10, offsetGreen = 10;
-    for (let i = 0; i <= 200; i++) {
-        reds[i] = offsetRed;
-        greens[i] = offsetGreen;
-
-        if (i < 100) {
-            offsetRed += 4;
-        } else if (i < 200) {
-            offsetGreen += 4;
-        }
-    }
-})();
-
-
 // render fractal
 (function () {
     let width, height, renderedX;
@@ -78,8 +61,7 @@ const reds = [], greens = [];
             // render progressively in columns
             for (; x <= renderedX; x++) {
                 for (let y = 0; y <= height; y++) {
-                    const n = stepsToDivergence((x - offsetX) / zoom, (y - offsetY) / zoom, iterations);
-                    context.fillStyle = colorFromSteps(n, iterations);
+                    context.fillStyle = colorAtPoint((x - offsetX) / zoom, (y - offsetY) / zoom, iterations);
                     context.fillRect(x, y, 1, 1);
                 }
             }
@@ -93,7 +75,7 @@ const reds = [], greens = [];
 })();
 
 
-function stepsToDivergence(x, y, max) {
+function colorAtPoint(x, y, max) {
     // always buffer real part (both calculations need to be simulations)
     let currentRe = 0, currentIm = 0, buffer = 0;
     for (let n = 0; n < max; n++) {
@@ -102,19 +84,9 @@ function stepsToDivergence(x, y, max) {
         currentRe = buffer;
 
         if (currentRe * currentRe + currentIm * currentIm > 4) {
-            return n;
+            return 'hsl(' + (n / max * 360) + ', 90%, 50%)';
         }
     }
 
-    return 0;
+    return 'black';
 }
-
-function colorFromSteps(n, max) {
-    if (n == 0) {
-        return 'black';
-    }
-
-    let index = Math.round(n / max * 200);
-    return `rgb(${reds[index]}, ${greens[index]}, 0)`;
-}
-
