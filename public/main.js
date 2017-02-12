@@ -29,6 +29,10 @@
                     context.fillRect(x, y, 1, 1);
                 }
             }
+
+            // mark current rendering position
+            context.fillStyle = 'white';
+            context.fillRect(x + 1, 0, 1, height);
         } else if (isTiming) {
             console.timeEnd('rendering');
             isTiming = false;
